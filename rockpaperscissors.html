@@ -2,11 +2,140 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Page Title</title>
+    <title>Rock Paper Scissors!</title>
 </head>
 <body>
     <script>
-        
+        function getComputerChoice() {
+            let choice = null;
+
+            // select random number 0 - 12
+            let num = Math.floor(Math.random() * 11);
+
+            // assign to rock/paper/scissors dependant on % 3
+            if (num % 3 === 0) {
+                choice = "rock";
+            }
+            else if (num % 3 === 1) {
+                choice = "paper";
+            }
+            else {
+                choice = "scissors";
+            }
+
+            return choice;
+        }
+
+        function getPlayerChoice() {
+            // establish variables, legal selection array
+            let legal = false;
+            let userInput = "";
+            const legalSelection = ["rock", "paper", "scissors"];
+            
+            // request user input until legal answer provided
+            while (legal === false){
+                userInput = prompt("Choose rock, paper or scissors!").toLowerCase();
+                if (legalSelection.includes(userInput)) {
+                    legal = true;
+                }
+
+            }
+            return userInput;
+        }
+
+        function compareSelections(playerSelection, computerSelection) {
+            // create dictionaries for win and loss comparison
+            const rockDict = {
+                scissors: 1,
+                paper: 0
+            };
+
+            const paperDict = {
+                rock: 1,
+                scissors: 0,
+            };
+
+            const scissorsDict = {
+                paper: 1,
+                rock: 0
+            };
+
+            // compare player selection to user selection by accessing dictionaries, return 1 if user wins, 0 if not
+            if (playerSelection === "rock") {
+                if (rockDict[computerSelection] === 0) {
+                    console.log("You lose,", playerSelection, "loses to", computerSelection);
+                }
+                else {
+                    console.log("You win!", playerSelection, "beats", computerSelection);
+                }
+                return(rockDict[computerSelection])
+            }
+            else if (playerSelection === "paper") {
+                if (paperDict[computerSelection] === 0) {
+                    console.log("You lose,", playerSelection, "loses to", computerSelection);
+                }
+                else {
+                    console.log("You win!", playerSelection, "beats", computerSelection);
+                }
+                return(paperDict[computerSelection])
+            }
+            else if (playerSelection === "scissors") {
+                if (scissorsDict[computerSelection] === 0) {
+                    console.log("You lose,", playerSelection, "loses to", computerSelection);
+                }
+                else {
+                    console.log("You win!", playerSelection, "beats", computerSelection);
+                }
+                return(scissorsDict[computerSelection])
+            }
+        }
+
+
+        function playRound(playerSelection, computerSelection) {
+            // initialize variable
+            let userWin = null;
+
+            // tie check, return -1
+            if (playerSelection === computerSelection) {
+                console.log("Tie! You both chose:", playerSelection, "Redo round!");
+                return -1;
+            }
+
+            // call compareSelections helper function, return 1 if player wins, 0 if computer wins
+            else (userWin = compareSelections(playerSelection, computerSelection));
+            return userWin;
+        }
+
+        function game() {
+            // initialize variables
+            let rounds = 0;
+            let score = 0;
+
+            // play 5 rounds against the computer
+            for (let i = 0; i < 5; i++) {
+                let result = playRound(getPlayerChoice(), getComputerChoice());
+                rounds++;
+
+                // decrement loop counter if tie
+                if (result === -1) {
+                    i--;
+                }
+
+                // increment score if player win
+                else if (result === 1) {
+                    score++;
+                }
+            }
+            if (score > 2) {
+                console.log("You beat the computer", score, "to", (5 - score), "in", rounds, "rounds.");
+            }
+            else {
+                console.log("You lost to the computer", score, "to", (5 - score), "in", rounds, "rounds.");
+            }
+        }
+
+        game();
+
     </script>
 </body>
 </html>
