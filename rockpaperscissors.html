@@ -5,7 +5,56 @@
     <title>Rock Paper Scissors!</title>
 </head>
 <body>
+    <div class="player_selection">
+        <button class="rock" onclick="playGame('rock')">Rock</button>
+        <button class="paper" onclick="playGame('paper')">Paper</button>
+        <button class="scissors" onclick="playGame('scissors')">Scissors</button>
+    </div>
+
+    <div id="game_display">
+    </div>
+
+    <div id="results_display">
+    </div>
+
+
+
     <script>
+        // global score variables
+        let rounds = 0;
+        let playerScore = 0;
+        let computerScore = 0;
+
+        // select and display the game info
+        const game_display = document.querySelector("#game_display");
+        const results_display = document.querySelector("#results_display");
+
+        // create game display p in dom
+        const round_result = document.createElement('p');
+        round_result.textContent = `Make a selection! First to 5 wins!`;
+
+        // create round counter p in dom
+        const round_counter = document.createElement('p');
+        round_counter.textContent = `There have been ${rounds} rounds played.`;
+
+        // create current score
+        const curr_score = document.createElement('p');
+        curr_score.textContent = `Player: ${playerScore} Computer: ${computerScore}`;
+
+        // append to html
+        game_display.appendChild(round_result);
+        results_display.appendChild(round_counter);
+        results_display.appendChild(curr_score);
+
+        function playGame(playerSelection) {
+            // main logic for game flow
+            let computerSelection = getComputerChoice();
+            let roundResult = compareSelections(playerSelection, computerSelection);
+            updateScores(roundResult);
+            updateDisplay(roundResult, playerSelection, computerSelection);
+            checkWinCondition();
+        };
+
         function getComputerChoice() {
             let choice = null;
 
@@ -24,24 +73,7 @@
             }
 
             return choice;
-        }
-
-        function getPlayerChoice() {
-            // establish variables, legal selection array
-            let legal = false;
-            let userInput = "";
-            const legalSelection = ["rock", "paper", "scissors"];
-            
-            // request user input until legal answer provided
-            while (legal === false){
-                userInput = prompt("Choose rock, paper or scissors!").toLowerCase();
-                if (legalSelection.includes(userInput)) {
-                    legal = true;
-                }
-
-            }
-            return userInput;
-        }
+        };
 
         function compareSelections(playerSelection, computerSelection) {
             // create dictionaries for win and loss comparison
@@ -61,80 +93,73 @@
             };
 
             // compare player selection to user selection by accessing dictionaries, return 1 if user wins, 0 if not
-            if (playerSelection === "rock") {
-                if (rockDict[computerSelection] === 0) {
-                    console.log("You lose,", playerSelection, "loses to", computerSelection);
-                }
-                else {
-                    console.log("You win!", playerSelection, "beats", computerSelection);
-                }
+            if (playerSelection === computerSelection) {
+                return(-1);
+            }
+            else if (playerSelection === "rock") {
                 return(rockDict[computerSelection])
             }
             else if (playerSelection === "paper") {
-                if (paperDict[computerSelection] === 0) {
-                    console.log("You lose,", playerSelection, "loses to", computerSelection);
-                }
-                else {
-                    console.log("You win!", playerSelection, "beats", computerSelection);
-                }
                 return(paperDict[computerSelection])
             }
             else if (playerSelection === "scissors") {
-                if (scissorsDict[computerSelection] === 0) {
-                    console.log("You lose,", playerSelection, "loses to", computerSelection);
-                }
-                else {
-                    console.log("You win!", playerSelection, "beats", computerSelection);
-                }
                 return(scissorsDict[computerSelection])
             }
+            
         }
 
-
-        function playRound(playerSelection, computerSelection) {
-            // initialize variable
-            let userWin = null;
-
-            // tie check, return -1
-            if (playerSelection === computerSelection) {
-                console.log("Tie! You both chose:", playerSelection, "Redo round!");
-                return -1;
+        function updateScores(roundResult) {
+            rounds += 1;
+            if (roundResult === -1) {
+                return;
             }
-
-            // call compareSelections helper function, return 1 if player wins, 0 if computer wins
-            else (userWin = compareSelections(playerSelection, computerSelection));
-            return userWin;
+            else if (roundResult === 0) {
+                computerScore += 1;
+                return
+            }
+            else if (roundResult === 1) {
+                playerScore += 1;
+                return
+            }
         }
 
-        function game() {
-            // initialize variables
-            let rounds = 0;
-            let score = 0;
-
-            // play 5 rounds against the computer
-            for (let i = 0; i < 5; i++) {
-                let result = playRound(getPlayerChoice(), getComputerChoice());
-                rounds++;
-
-                // decrement loop counter if tie
-                if (result === -1) {
-                    i--;
-                }
-
-                // increment score if player win
-                else if (result === 1) {
-                    score++;
-                }
+        function updateDisplay(roundResult, playerSelection, computerSelection) {
+            // update game_display based on round result
+            if (roundResult === -1) {
+                round_result.textContent = `Tie round! You both chose ${playerSelection}.`;
             }
-            if (score > 2) {
-                console.log("You beat the computer", score, "to", (5 - score), "in", rounds, "rounds.");
+            else if (roundResult === 0) {
+                round_result.textContent = `The computer wins! ${playerSelection} loses to ${computerSelection}.`
+            }
+            else if (roundResult === 1) {
+                round_result.textContent = `You win! ${playerSelection} beats ${computerSelection}.`
+            }
+            
+            // update results display
+            round_counter.textContent = `There have been ${rounds} rounds played.`;
+            curr_score.textContent = `Player: ${playerScore} Computer: ${computerScore}`;
+        }
+
+        function checkWinCondition() {
+            if (playerScore === 5) {
+                curr_score.textContent = `You win the game! ${playerScore} to ${computerScore}. Make another selection to play again.`;
+                rounds = 0;
+                playerScore = 0;
+                computerScore = 0;
+                return;
+            }
+            else if (computerScore === 5) {
+                curr_score.textContent = `You lose the game. ${playerScore} to ${computerScore}. Make another selection to play again.`;
+                rounds = 0;
+                playerScore = 0;
+                computerScore = 0;
+                return;
             }
             else {
-                console.log("You lost to the computer", score, "to", (5 - score), "in", rounds, "rounds.");
+                return;
             }
         }
 
-        game();
 
     </script>
 </body>
